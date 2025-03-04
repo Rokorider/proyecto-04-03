@@ -1,21 +1,12 @@
-El código HTML que has proporcionado parece estar bien estructurado para mostrar diferentes estados de carga de datos en una aplicación Angular. Aquí hay una breve explicación de lo que hace cada parte del código:
 
-1. **Cargando datos...**: Si la variable `loading` es verdadera, se muestra el mensaje "Cargando datos...".
-  ```html
   <div *ngIf="loading">
     Cargando datos...
   </div>
-  ```
 
-2. **Error al cargar datos**: Si la variable `error` es verdadera, se muestra un mensaje de error con el contenido de `error.message`.
-  ```html
   <div *ngIf="error">
     Error al cargar datos: {{ error.message }}
   </div>
-  ```
-
-3. **Tabla de datos**: Si la variable `data` existe y tiene al menos un elemento, se muestra una tabla con los datos. Las columnas de la tabla se generan dinámicamente a partir de la variable `columns`, y las filas se generan a partir de la variable `data`.
-  ```html
+  
   <div *ngIf="data && data.length > 0">
     <table>
       <thead>
@@ -30,6 +21,3 @@ El código HTML que has proporcionado parece estar bien estructurado para mostra
       </tbody>
     </table>
   </div>
-  ```
-
-Si hay algún problema específico que estás experimentando con este código, por favor proporciona más detalles para que pueda ayudarte mejor.
