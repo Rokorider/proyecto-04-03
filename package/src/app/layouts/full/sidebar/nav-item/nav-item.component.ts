@@ -5,15 +5,18 @@ import {
   OnChanges,
   Output,
   EventEmitter,
+  ComponentFactoryResolver,
+  ViewChild,
+  ViewContainerRef,
 } from '@angular/core';
 import { NavItem } from './nav-item';
 import { Router } from '@angular/router';
 import { NavService } from '../../../../services/nav.service';
-
 import { TranslateModule } from '@ngx-translate/core';
 import { TablerIconsModule } from 'angular-tabler-icons';
 import { MaterialModule } from 'src/app/material.module';
 import { CommonModule } from '@angular/common';
+import { ApiDataComponent } from '../../../../components/api-data/api-data.component'; // Importa el componente ApiDataComponent
 
 @Component({
   selector: 'app-nav-item',
@@ -23,15 +26,17 @@ import { CommonModule } from '@angular/common';
 })
 export class AppNavItemComponent implements OnChanges {
   @Output() notify: EventEmitter<boolean> = new EventEmitter<boolean>();
-
   @Input() item: NavItem | any;
-
   expanded: any = false;
-
   @HostBinding('attr.aria-expanded') ariaExpanded = this.expanded;
   @Input() depth: any;
+  @ViewChild('componentContainer', { read: ViewContainerRef, static: true }) componentContainer: ViewContainerRef; // Añade ViewChild
 
-  constructor(public navService: NavService, public router: Router) {}
+  constructor(
+    public navService: NavService,
+    public router: Router,
+    private componentFactoryResolver: ComponentFactoryResolver // Añade ComponentFactoryResolver
+  ) {}
 
   ngOnChanges() {
     const url = this.navService.currentUrl();
@@ -42,18 +47,25 @@ export class AppNavItemComponent implements OnChanges {
   }
 
   onItemSelected(item: NavItem) {
-    if (!item.children || !item.children.length) {
+    if (item.component === 'ApiDataComponent') { // Comprueba si el ítem tiene un componente asociado
+      this.componentContainer.clear(); // Limpia el contenedor
+      const factory = this.componentFactoryResolver.resolveComponentFactory(ApiDataComponent); // Crea la fábrica del componente
+      const componentRef = this.componentContainer.createComponent(factory); // Crea el componente
+      componentRef.instance.apiUrl = 'https://jsonplaceholder.typicode.com/users'; // Pasa la URL de la API al componente
+    } else if (!item.children || !item.children.length) {
       this.router.navigate([item.route]);
     }
+
     if (item.children && item.children.length) {
       this.expanded = !this.expanded;
     }
-    //scroll
+
     window.scroll({
       top: 0,
       left: 0,
       behavior: 'smooth',
     });
+
     if (!this.expanded) {
       if (window.innerWidth < 1024) {
         this.notify.emit();

@@ -4,19 +4,19 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApiService {
-  constructor(private http: HttpClient) { }
+  private apiUrl = 'https://jsonplaceholder.typicode.com/users'; // API de ejemplo
 
-  getData(url: string): Observable<any> {
-    return this.http.get(url).pipe(
-      catchError(this.handleError)
+  constructor(private http: HttpClient) {}
+
+  getUsers(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl).pipe(
+      catchError((error) => {
+        console.error('Error al obtener los datos:', error);
+        return throwError(() => new Error('Error en la API'));
+      })
     );
-  }
-
-  private handleError(error: any) {
-    console.error('API error:', error);
-    return throwError(() => new Error('API error'));
   }
 }
